@@ -1,0 +1,32 @@
+spring:
+  cloud:
+    config:
+      discovery:
+         enabled: true
+         serviceId: config-server
+      label: master
+      profile: ${CONFIG_ENV}
+    consul:
+      host: ${CONSUL_HOST}
+      port: ${CONSUL_PORT}
+      discovery:
+        healthCheckPath: /info
+        healthCheckInterval: 15s
+        instance-id: xapi-service
+        hostname: ${HOST}
+        port: ${PORT}
+        acl-token: ${ACL_TOKEN}
+  application:
+     name: xapi-service
+server:
+  port: 8090
+ribbon:
+   ServerListRefreshInterval: 1000
+endpoints:
+    health:
+      sensitive: false
+    restart:
+      enabled: true
+    shutdown:
+      enabled: true
+      

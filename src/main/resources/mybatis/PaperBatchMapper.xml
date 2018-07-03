@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.xapiservice.app.mapper.PaperBatchMapper">
+    <resultMap id="BaseResultMap" type="com.example.xapiservice.app.entity.PaperBatch">
+        <result column="sid" property="sid"/>
+        <result column="sys_create" property="sysCreate"/>
+        <result column="creator" property="creator"/>
+        <result column="sys_modified" property="sysModified"/>
+        <result column="modifier" property="modifier"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="batch_id" property="batchId"/>
+        <result column="app_key" property="appKey"/>
+        <result column="batch_num" property="batchNum"/>
+        <result column="batch_name" property="batchName"/>
+        <result column="subject_stime" property="subjectStime"/>
+        <result column="subject_etime" property="subjectEtime"/>
+        <result column="defence_stime" property="defenceStime"/>
+        <result column="defence_etime" property="defenceEtime"/>
+        <result column="is_repeat" property="isRepeat"/>
+        <result column="repeat_percent" property="repeatPercent"/>
+        <result column="publish_status" property="publishStatus"/>
+        <result column="publish_time" property="publishTime"/>
+        <result column="publish_name" property="publishName"/>
+        <result column="description" property="description"/>
+        <result column="defence_apply_stime" property="defenceApplyStime"/>
+        <result column="defence_apply_etime" property="defenceApplyEtime"/>
+        <result column="org_id" property="orgId"/>
+        <result column="org_name" property="orgName"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="Object">
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="sid">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into paper_batch
+        (sid,batch_id,app_key,batch_num,batch_name,subject_stime,subject_etime,defence_stime,defence_etime,defence_apply_stime,defence_apply_etime,
+        is_repeat,repeat_percent,publish_status,publish_time,publish_name,description,sys_create,creator,
+        sys_modified,modifier,is_deleted,org_id,org_name,is_active)
+        values
+        (#{sid},#{batchId},#{appKey},#{batchNum},#{batchName},#{subjectStime},#{subjectEtime},#{defenceStime},#{defenceEtime},#{defenceApplyStime},
+        #{defenceApplyEtime},#{isRepeat},#{repeatPercent},#{publishStatus},#{publishTime},#{publishName},
+        #{description},now(),#{creator},now(),#{modifier},0,#{orgId},#{orgName},#{isActive})
+    </insert>
+
+    <update id="updateBySelective1" parameterType="Object">
+        update paper_batch
+        <set>
+            <if test="batchId != null and batchId != null">
+                batch_id = #{batchId},
+            </if>
+            <if test="appKey != null and appKey != null">
+                app_key = #{appKey},
+            </if>
+            <if test="batchNum != null and batchNum != null">
+                batch_num = #{batchNum},
+            </if>
+            <if test="batchName != null and batchName != null">
+                batch_name = #{batchName},
+            </if>
+            <if test="subjectStime != null">
+                subject_stime = #{subjectStime},
+            </if>
+            <if test="subjectEtime != null">
+                subject_etime = #{subjectEtime},
+            </if>
+            <if test="defenceStime != null">
+                defence_stime = #{defenceStime},
+            </if>
+            <if test="defenceEtime != null">
+                defence_etime = #{defenceEtime},
+            </if>
+            <if test="defenceApplyStime != null">
+                defence_apply_stime = #{defenceApplyStime},
+            </if>
+            <if test="defenceApplyEtime != null">
+                defence_apply_etime = #{defenceApplyEtime},
+            </if>
+            <if test="isRepeat != null">
+                is_repeat = #{isRepeat},
+            </if>
+            <if test="repeatPercent != null">
+                repeat_percent = #{repeatPercent},
+            </if>
+            <if test="publishStatus != null">
+                publish_status = #{publishStatus},
+            </if>
+            <if test="publishTime != null">
+                publish_time = #{publishTime},
+            </if>
+            <if test="publishName != null and publishName != null">
+                publish_name = #{publishName},
+            </if>
+            <if test="description != null and description != null">
+                description = #{description},
+            </if>
+            <if test="modifier != null and modifier != null">
+                modifier = #{modifier},
+            </if>
+            <if test="isDeleted != null">
+                is_deleted = #{isDeleted},
+            </if>
+            <if test="orgId != null and orgId != ''">
+                org_id = #{orgId},
+            </if>
+            <if test="orgName != null and orgName != ''">
+                org_name = #{orgName},
+            </if>
+            sys_modified = now()
+        </set>
+        where batch_id = #{batchId}
+    </update>
+
+    <update id="deleteBybatchId" parameterType="Object">
+        update paper_batch
+        <set>
+            <if test="isDeleted != null ">
+                is_deleted = #{isDeleted},
+            </if>
+            <if test="publishStatus != null ">
+                publish_status = #{publishStatus},
+            </if>
+            <if test="modifier != null and modifier != null">
+                modifier = #{modifier},
+            </if>
+            sys_modified = now()
+        </set>
+        where batch_id = #{batchId}
+    </update>
+
+    <select id="findBySelective" resultMap="BaseResultMap" parameterType="Object">
+        select
+        <include refid="Base_Column_List"/>
+        from paper_batch
+        <include refid="Example_Where_Clause"/>
+        order by sys_create desc
+        <if test="mysqlQueryCondition != null and mysqlQueryCondition != ''">
+            ${mysqlQueryCondition}
+        </if>
+    </select>
+
+    <select id="findBySelectiveNopage" resultMap="BaseResultMap" parameterType="Object">
+        select
+        <include refid="Base_Column_List"/>
+        from paper_batch
+        <include refid="Example_Where_Clause"/>
+        order by sys_create desc
+    </select>
+
+    <!-- 查询批次总数 -->
+    <select id="findPageCount" parameterType="Object" resultType="int">
+        select count(1) from paper_batch
+        <include refid="Example_Where_Clause"/>
+    </select>
+
+
+
+    <!-- 判断是否存在某个批次 -->
+    <select id="isExistsBatch" parameterType="Object" resultType="int">
+        select count(1) from paper_batch pb
+        <where>
+            <if test="batchId != null and batchId != ''">
+                and pb.batch_id = #{batchId}
+            </if>
+            <if test="orgId != null and orgId != ''">
+                and pb.org_id = #{orgId}
+            </if>
+
+            and pb.is_deleted = 0
+
+        </where>
+    </select>
+
+    <!-- 判断是否存在某个批次名称 -->
+    <select id="isExistsBatchName" parameterType="Object" resultType="int">
+		select count(1) from paper_batch pb
+		<where>
+            <if test="batchId != null and batchId != ''">
+                and pb.batch_id = #{batchId}
+            </if>
+            <if test="batchName != null and batchName != ''">
+                and pb.batch_name = #{batchName}
+            </if>
+            <if test="orgId != null and orgId != ''">
+                and pb.org_id = #{orgId}
+            </if>
+            <if test="isDeleted != null and isDeleted != ''">
+                and pb.is_deleted = #{isDeleted}
+            </if>
+        </where>
+	</select>
+
+    <!-- 判断是否引用某个批次 -->
+    <select id="isExistsBatchQuote" parameterType="Object" resultType="int">
+        select count(1) from batch_thesis_relation pb
+        <where>
+            <if test="batchId != null and batchId != ''">
+                and pb.batch_id = #{batchId}
+            </if>
+            <if test="orgId != null and orgId != ''">
+                and pb.org_id = #{orgId}
+            </if>
+            <if test="isDeleted != null and isDeleted != ''">
+                and pb.is_deleted = #{isDeleted}
+            </if>
+        </where>
+    </select>
+
+    <!-- 判断该批次是否已经发布 -->
+    <select id="isAlreadyPublished" parameterType="Object" resultType="int">
+        select count(1) from paper_batch pb
+        <where>
+            <if test="batchId != null and batchId != ''">
+                and pb.batch_id = #{batchId}
+            </if>
+            <if test="orgId != null  and orgId != ''">
+                and pb.org_id = #{orgId}
+            </if>
+            <if test="publishStatus != null and publishStatus != ''">
+                and pb.publish_status = #{publishStatus}
+            </if>
+            <if test="isDeleted != null and isDeleted != ''">
+                and pb.is_deleted = #{isDeleted}
+            </if>
+        </where>
+    </select>
+
+    <select id="isExistsBatchNumOrName" parameterType="Object" resultType="int">
+        select count(1) from paper_batch pb
+        <where>
+            <if test="batchNum != null and batchNum != ''">
+                and pb.batch_num = #{batchNum}
+            </if>
+            <if test="batchName != null and batchName != ''">
+                and pb.batch_name = #{batchName}
+            </if>
+            <if test="orgId != null  and orgId != ''">
+                and pb.org_id = #{orgId}
+            </if>
+            <if test="isDeleted != null and isDeleted != ''">
+                and pb.is_deleted = #{isDeleted}
+            </if>
+        </where>
+    </select>
+
+    <sql id="Base_Column_List">
+		 sid,batch_id,app_key,batch_num,batch_name,subject_stime,subject_etime,defence_stime,
+		 defence_etime,defence_apply_stime,defence_apply_etime,is_repeat,repeat_percent,publish_status,publish_time,publish_name,description,
+		 sys_create,creator,sys_modified,modifier,is_deleted,org_id,org_name
+	</sql>
+
+    <sql id="Example_Where_Clause">
+        <where>
+            <if test="sid != null and sid != ''">
+                and sid = #{sid}
+            </if>
+            <if test="batchId != null and batchId != ''">
+                and batch_id = #{batchId}
+            </if>
+            <if test="appKey != null and appKey != ''">
+                and app_key = #{appKey}
+            </if>
+            <if test="batchNum != null and batchNum != ''">
+                and batch_num = #{batchNum}
+            </if>
+            <if test="batchName != null and batchName != ''">
+                and batch_name = #{batchName}
+            </if>
+            <if test="subjectStime != null">
+                and subject_stime = #{subjectStime}
+            </if>
+            <if test="subjectEtime != null">
+                and subject_etime = #{subjectEtime}
+            </if>
+            <if test="defenceStime != null">
+                and defence_stime = #{defenceStime}
+            </if>
+            <if test="defenceEtime != null">
+                and defence_etime = #{defenceEtime}
+            </if>
+            <if test="defenceApplyStime != null">
+                defence_apply_stime = #{defenceApplyStime},
+            </if>
+            <if test="defenceApplyEtime != null">
+                defence_apply_etime = #{defenceApplyEtime},
+            </if>
+            <if test="isRepeat != null and isRepeat != ''">
+                and is_repeat = #{isRepeat}
+            </if>
+            <if test="repeatPercent != null">
+                and repeat_percent = #{repeatPercent}
+            </if>
+            <if test="publishStatus != null and publishStatus != ''">
+                and publish_status = #{publishStatus}
+            </if>
+            <if test="publishTime != null">
+                and publish_time = #{publishTime}
+            </if>
+            <if test="publishName != null and publishName != ''">
+                and publish_name = #{publishName}
+            </if>
+            <if test="description != null and description != ''">
+                and description = #{description}
+            </if>
+            <if test="sysCreate != null">
+                and sys_create = #{sysCreate}
+            </if>
+            <if test="creator != null and creator != ''">
+                and creator = #{creator}
+            </if>
+            <if test="sysModified != null">
+                and sys_modified = #{sysModified}
+            </if>
+            <if test="modifier != null and modifier != ''">
+                and modifier = #{modifier}
+            </if>
+            <if test="isDeleted != null and isDeleted != ''">
+                and is_deleted = #{isDeleted}
+            </if>
+            <if test="isDeleted == null or isDeleted == ''">
+                and is_deleted = 0
+            </if>
+            <if test="orgId != null and orgId != ''">
+                and org_id = #{orgId}
+            </if>
+            <if test="orgName != null and orgName != ''">
+                and org_name = #{orgName}
+            </if>
+        </where>
+    </sql>
+
+</mapper>   
